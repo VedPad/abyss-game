@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\vedpa\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\vedpa\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_abyss-game.-993567718.00" t="ExcludeRecursive" />
+    <e p="C:\Users\vedpa\OneDrive\Desktop\UnityProjects\abyss-game" t="IncludeRecursive">
+      <e p="abyss-game.sln" t="IncludeFlat" />
+      <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
+      <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
+      <e p="Assets" t="Include">
+        <e p="cosmeticGlowyLeviathan.cs" t="Include" />
+        <e p="createPlaneInspector.cs" t="Include" />
+        <e p="createPlaneScript.cs" t="Include" />
+        <e p="Creatures" t="Include">
+          <e p="Lizard" t="Include">
+            <e p="CosmeticLizardTest.cs" t="Include" />
+            <e p="LizardScript.cs" t="Include" />
+          </e>
+          <e p="Squid" t="Include">
+            <e p="CosmeticSquid.cs" t="Include" />
+            <e p="SquidController.cs" t="Include" />
+            <e p="squidTentacle.cs" t="Include" />
+          </e>
+          <e p="Tentacula" t="Include">
+            <e p="tentacleMonsterScript.cs" t="Include" />
+          </e>
+          <e p="UtilityScripts" t="Include">
+            <e p="cosmeticTentacleTest.cs" t="Include" />
+            <e p="snakeScript.cs" t="Include" />
+            <e p="tentacleGravityTesting.cs" t="Include" />
+            <e p="tentaclePartScript.cs" t="Include" />
+            <e p="tentacleScript.cs" t="Include" />
+          </e>
+        </e>
+        <e p="followCameraInsideReflection.cs" t="Include" />
+        <e p="FPSDisplay.cs" t="Include" />
+        <e p="fruitScript.cs" t="Include" />
+        <e p="glowyLeviathanScript.cs" t="Include" />
+        <e p="grassMaterialBlock.cs" t="Include" />
+        <e p="Inverse Kinematics" t="Include">
+          <e p="Scripts" t="Include">
+            <e p="InverseKinematics.cs" t="Include" />
+          </e>
+        </e>
+        <e p="LightRays2D" t="Include">
+          <e p="Editor" t="Include">
+            <e p="LightRays2DEditor.cs" t="Include" />
+          </e>
+          <e p="Readme.txt" t="Include" />
+          <e p="Script" t="Include">
+            <e p="LightRays2D.cs" t="Include" />
+            <e p="LightRays2DAbstract.cs" t="Include" />
+            <e p="LightRays2DCanvas.cs" t="Include" />
+          </e>
+          <e p="Shaders" t="Include">
+            <e p="LightRays.shader" t="Include" />
+          </e>
+        </e>
+        <e p="lockRotation.cs" t="Include" />
+        <e p="raptorScript.cs" t="Include" />
+        <e p="ReflectionCamScript.cs" t="Include" />
+        <e p="waterScript.cs" t="Include" />
+      </e>
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="Packages" t="ExcludeRecursive" />
+      <e p="Temp\bin" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>

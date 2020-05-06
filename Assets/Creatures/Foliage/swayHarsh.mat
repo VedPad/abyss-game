@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: sway
+  m_Name: swayHarsh
   m_Shader: {fileID: -6465566751694194690, guid: b2eb6452fef1a2f4fbe69e99c9067e14,
     type: 3}
   m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
@@ -35,7 +35,7 @@ Material:
     m_Floats:
     - Vector1_4B850BA4: 0.03
     - Vector1_C91C0A68: 5.51
-    - _WindDensity: 0.03
-    - _WindStrength: 1
+    - _WindDensity: 0.015
+    - _WindStrength: 10
     m_Colors:
     - Vector2_ED65AB72: {r: 14.57, g: 0, b: 0, a: 0}
