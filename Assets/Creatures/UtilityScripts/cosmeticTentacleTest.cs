@@ -12,6 +12,7 @@ public class cosmeticTentacleTest : MonoBehaviour
     public Color endColor;
     private GameObject line;
     private LineRenderer lr;
+    public int endCapVerts = 0;
 
     public float startWidth;
 
@@ -20,6 +21,8 @@ public class cosmeticTentacleTest : MonoBehaviour
     public bool doSmoothing = true;
 
     public int sortingOrder = 1;
+
+    public string sortingLayerName = "creature";
     // Start is called before the first frame update
     void Start()
     {
@@ -30,7 +33,8 @@ public class cosmeticTentacleTest : MonoBehaviour
         lr.colorGradient = colors;
         lr.widthCurve = widthCurve;
         lr.sortingOrder = sortingOrder;
-        lr.sortingLayerName = "creature";
+        lr.sortingLayerName = sortingLayerName;
+        lr.numCapVertices = endCapVerts;
     }
 
     // Update is called once per frame
