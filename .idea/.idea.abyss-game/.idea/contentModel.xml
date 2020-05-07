@@ -9,9 +9,11 @@
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
         <e p="cosmeticGlowyLeviathan.cs" t="Include" />
-        <e p="createPlaneInspector.cs" t="Include" />
-        <e p="createPlaneScript.cs" t="Include" />
         <e p="Creatures" t="Include">
+          <e p="Boids" t="Include">
+            <e p="Boid.cs" t="Include" />
+            <e p="BoidsCPUSide.cs" t="Include" />
+          </e>
           <e p="Lizard" t="Include">
             <e p="CosmeticLizardTest.cs" t="Include" />
             <e p="LizardScript.cs" t="Include" />
@@ -101,6 +103,9 @@
         </e>
         <e p="raptorScript.cs" t="Include" />
         <e p="ReflectionCamScript.cs" t="Include" />
+        <e p="Resources" t="Include">
+          <e p="BoidsCompute.compute" t="Include" />
+        </e>
         <e p="seaStranglerCosmetics.cs" t="Include" />
         <e p="waterScript.cs" t="Include" />
       </e>

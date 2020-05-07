@@ -1,0 +1,70 @@
+﻿struct boid{
+    float x;
+    float y;
+    float dirDegrees;
+    int id;
+    float lookDistance;
+    float debug1;
+    float debug2;
+    float realAngle;
+};
+
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWStructuredBuffer<boid> boidBuffer;
+int nBoids;
+
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel MainSimulation
+
+
+
+[numthreads(32,1,1)]
+void MainSimulation (uint3 id : SV_DispatchThreadID)
+{
+    boid boidNode = boidBuffer[id.x];
+    int nodeIndex = id.x;
+    int i = 0;
+    float2 totalDirection = float2(0,0);
+    float2 averageBoidDir = float2(0,0);
+    float2 averageBoidPos = float2(0,0);
+    int boidsNearby = 0;
+    bool doTotalDir = false;
+    while(i < nBoids){
+        if(i == nodeIndex){
+            i++;
+            continue;
+        }
+        boid otherBoidNode = boidBuffer[i];
+        float2 direction = float2(otherBoidNode.x, otherBoidNode.y) - float2(boidNode.x, boidNode.y);
+        float magnitude = distance(float2(0,0),direction);
+        if(magnitude <= boidNode.lookDistance){
+            totalDirection += direction/magnitude;
+             float2 boidDirection = float2(cos(otherBoidNode.realAngle), sin(otherBoidNode.realAngle));
+             averageBoidDir += boidDirection;
+             averageBoidPos += float2(otherBoidNode.x, otherBoidNode.y);
+            doTotalDir = true;
+            boidsNearby += 1;
+        }
+        i++;
+    }
+    if(doTotalDir){
+        averageBoidPos = averageBoidPos/boidsNearby;
+        float2 dir = averageBoidPos - float2(boidNode.x, boidNode.y);
+        float mag = distance(float2(0,0), dir);
+        averageBoidPos = dir/mag;
+        boidBuffer[nodeIndex].debug1 = averageBoidPos.x;
+        boidBuffer[nodeIndex].debug2 = averageBoidPos.y;
+        averageBoidDir = averageBoidDir/boidsNearby;
+        totalDirection = -totalDirection/boidsNearby;
+        totalDirection += averageBoidDir;
+        totalDirection += averageBoidPos;
+        totalDirection = totalDirection;
+        float angle = atan2(totalDirection.y, totalDirection.x);
+       
+        boidBuffer[nodeIndex].dirDegrees = angle;
+    }
+    
+    
+}
