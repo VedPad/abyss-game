@@ -14,6 +14,14 @@ public struct boid{
     public float debug1;
     public float debug2;
     public float realAngle;
+    public int totalDirectionX;
+    public int totalDirectionY;
+    public int averageBoidDirX;
+    public int averageBoidDirY;
+    public int averageBoidPosX;
+    public int averageBoidPosY;
+    public int doTotalDir;
+    public int boidCount;
 }
 
 public class BoidsCPUSide : MonoBehaviour
@@ -25,6 +33,8 @@ public class BoidsCPUSide : MonoBehaviour
     private ComputeBuffer boidBuffer;
 
     private int kiMainSimulation;
+
+    private int kiDoBoidChanges;
     // Start is called before the first frame update
     void Start()
     {
@@ -44,15 +54,19 @@ public class BoidsCPUSide : MonoBehaviour
         }
         _boidsShader = Resources.Load<ComputeShader>("BoidsCompute");
         kiMainSimulation = _boidsShader.FindKernel("MainSimulation");
+        kiDoBoidChanges = _boidsShader.FindKernel("DoBoidChanges");
         SetupBuffers();
     }
 
     void SetupBuffers()
     {
-        boidBuffer = new ComputeBuffer(boidNodes.Count, 4 * 8);
+        boidBuffer = new ComputeBuffer(boidNodes.Count, 8 * 8);
         boidBuffer.SetData(boidNodes);
         _boidsShader.SetBuffer(kiMainSimulation, "boidBuffer", boidBuffer);
+        _boidsShader.SetBuffer(kiDoBoidChanges, "boidBuffer", boidBuffer);
         _boidsShader.SetInt("nBoids", boidBuffer.count);
+        _boidsShader.SetInt("F_TO_I", 2 << 17);
+        _boidsShader.SetFloat("I_TO_F", 1f/(2 << 17));
     }
 
     void SetupBoidBuffer()
@@ -78,7 +92,7 @@ public class BoidsCPUSide : MonoBehaviour
         for (var i = 0; i < boids.Count; i++)
         {
             boids[i].DoRayCasts();
-            boids[i].rb.AddRelativeForce(new Vector2(boids[i].force, 0));
+            boidTransforms[i].Translate(new Vector3(6 * Time.deltaTime, 0, 0), boidTransforms[i]);
             
         }
     }
@@ -86,16 +100,10 @@ public class BoidsCPUSide : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        for (var i = 0; i < boids.Count; i++)
-        {
-            if (boids[i].rb.velocity.magnitude > boids[i].maxVel)
-            {
-                boids[i].rb.velocity = boids[i].rb.velocity.normalized * boids[i].maxVel;
-            }
-        }
 
         SetupBoidBuffer();
-        _boidsShader.Dispatch(kiMainSimulation, Mathf.CeilToInt(boidNodes.Count/32f), 1,1);
+        _boidsShader.Dispatch(kiMainSimulation, Mathf.CeilToInt(boidNodes.Count/32f), Mathf.CeilToInt(boidNodes.Count/32f),1);
+        _boidsShader.Dispatch(kiDoBoidChanges, Mathf.CeilToInt(boidNodes.Count/32f), 1,1);
         boid[] array = new boid[boidBuffer.count];
         boidBuffer.GetData(array);
         boidNodes = array.ToList();

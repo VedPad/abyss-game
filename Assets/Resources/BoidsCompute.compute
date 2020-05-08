@@ -7,6 +7,14 @@
     float debug1;
     float debug2;
     float realAngle;
+    int totalDirectionX;
+    int totalDirectionY;
+    int averageBoidDirX;
+    int averageBoidDirY;
+    int averageBoidPosX;
+    int averageBoidPosY;
+    int doTotalDir;
+    int boidCount;
 };
 
 
@@ -14,42 +22,66 @@
 // with cs.SetTexture
 RWStructuredBuffer<boid> boidBuffer;
 int nBoids;
+int F_TO_I;					// float to int
+float I_TO_F;	
 
 // Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel MainSimulation
 
 
 
-[numthreads(32,1,1)]
+[numthreads(32,32,1)]
 void MainSimulation (uint3 id : SV_DispatchThreadID)
 {
     boid boidNode = boidBuffer[id.x];
     int nodeIndex = id.x;
-    int i = 0;
+    int i = id.y;
     float2 totalDirection = float2(0,0);
     float2 averageBoidDir = float2(0,0);
     float2 averageBoidPos = float2(0,0);
-    int boidsNearby = 0;
-    bool doTotalDir = false;
-    while(i < nBoids){
+    boid otherBoidNode = boidBuffer[id.y];
+    if(i != nodeIndex){
+             float magnitude = distance(float2(otherBoidNode.x, otherBoidNode.y), float2(boidNode.x, boidNode.y));
+            if(magnitude < boidNode.lookDistance){
+               
+                float2 direction = float2(otherBoidNode.x, otherBoidNode.y) - float2(boidNode.x, boidNode.y);
+                float2 temp = direction/magnitude;
+                InterlockedAdd(boidBuffer[nodeIndex].totalDirectionX, (int)(temp.x * F_TO_I));
+                InterlockedAdd(boidBuffer[nodeIndex].totalDirectionY, (int)(temp.y * F_TO_I));
+                if(otherBoidNode.id == boidNode.id){
+                     InterlockedAdd(boidBuffer[nodeIndex].averageBoidDirX, (int)(cos(otherBoidNode.realAngle) * F_TO_I));
+                     InterlockedAdd(boidBuffer[nodeIndex].averageBoidDirY, (int)(sin(otherBoidNode.realAngle) * F_TO_I));
+                     InterlockedAdd(boidBuffer[nodeIndex].averageBoidPosX, (int)(cos(otherBoidNode.x) * F_TO_I));
+                     InterlockedAdd(boidBuffer[nodeIndex].averageBoidPosY, (int)(cos(otherBoidNode.y) * F_TO_I));
+                }
+                boidBuffer[nodeIndex].doTotalDir = 1;
+                InterlockedAdd(boidBuffer[nodeIndex].boidCount, 1);
+            }
+     }
+   
+   /* while(i < nBoids){
         if(i == nodeIndex){
             i++;
             continue;
         }
         boid otherBoidNode = boidBuffer[i];
-        float2 direction = float2(otherBoidNode.x, otherBoidNode.y) - float2(boidNode.x, boidNode.y);
-        float magnitude = distance(float2(0,0),direction);
-        if(magnitude <= boidNode.lookDistance){
-            totalDirection += direction/magnitude;
-             float2 boidDirection = float2(cos(otherBoidNode.realAngle), sin(otherBoidNode.realAngle));
-             averageBoidDir += boidDirection;
-             averageBoidPos += float2(otherBoidNode.x, otherBoidNode.y);
-            doTotalDir = true;
-            boidsNearby += 1;
+        float magnitude = distance(float2(otherBoidNode.x, otherBoidNode.y), float2(boidNode.x, boidNode.y));
+        if(magnitude < boidNode.lookDistance){
+             float2 direction = float2(otherBoidNode.x, otherBoidNode.y) - float2(boidNode.x, boidNode.y);
+                totalDirection += direction/magnitude;
+                if(otherBoidNode.id == boidNode.id){
+                    averageBoidDir +=  float2(cos(otherBoidNode.realAngle), sin(otherBoidNode.realAngle));;
+                     averageBoidPos += float2(otherBoidNode.x, otherBoidNode.y);
+                }
+                 
+                doTotalDir = true;
+                boidsNearby += 1;
+        
         }
+       
         i++;
-    }
-    if(doTotalDir){
+    }*/
+    /*if(doTotalDir){
         averageBoidPos = averageBoidPos/boidsNearby;
         float2 dir = averageBoidPos - float2(boidNode.x, boidNode.y);
         float mag = distance(float2(0,0), dir);
@@ -60,11 +92,37 @@ void MainSimulation (uint3 id : SV_DispatchThreadID)
         totalDirection = -totalDirection/boidsNearby;
         totalDirection += averageBoidDir;
         totalDirection += averageBoidPos;
-        totalDirection = totalDirection;
+        totalDirection = totalDirection/3;
         float angle = atan2(totalDirection.y, totalDirection.x);
        
         boidBuffer[nodeIndex].dirDegrees = angle;
+    }*/
+    
+    
+}
+
+#pragma kernel DoBoidChanges
+
+[numthreads(32,1,1)]
+void DoBoidChanges (uint3 id : SV_DispatchThreadID)
+{
+    boid boid = boidBuffer[id.x];
+    int nodeIndex = id.x;
+    if(boid.doTotalDir == 1){
+        float2 averageBoidPos = float2((float)boid.averageBoidPosX * I_TO_F, (float)boid.averageBoidPosY * I_TO_F);
+        averageBoidPos = averageBoidPos/boid.boidCount;
+        float2 dir = averageBoidPos - float2(boid.x, boid.y);
+        float mag = distance(float2(0,0), dir);
+        averageBoidPos = dir/mag;
+        float2 averageBoidDir = float2((float)boid.averageBoidDirX * I_TO_F, (float)boid.averageBoidDirY * I_TO_F);
+        averageBoidDir = averageBoidDir/boid.boidCount;
+        float2 totalDirection = float2((float)boid.totalDirectionX * I_TO_F, (float)boid.totalDirectionY * I_TO_F);
+        totalDirection = -totalDirection/boid.boidCount;
+        totalDirection += averageBoidDir;
+        totalDirection += averageBoidPos;
+        totalDirection = totalDirection/3;
+         float angle = atan2(totalDirection.y, totalDirection.x);
+       
+        boidBuffer[nodeIndex].dirDegrees = angle;
     }
-    
-    
 }

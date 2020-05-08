@@ -20,7 +20,7 @@ public class Boid : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        //rb = GetComponent<Rigidbody2D>();
     }
 
     /*private void FixedUpdate()
@@ -33,11 +33,20 @@ public class Boid : MonoBehaviour
         }
     }*/
 
+    private void Update()
+    {
+        /*if (rb.velocity.magnitude > maxVel)
+        {
+            rb.velocity = rb.velocity.normalized * maxVel;
+        }*/
+    }
+
     public void DoRayCasts()
     {
         float step = Mathf.PI / hitAngles;
-        float ang = transform.eulerAngles.z * Mathf.Deg2Rad;
-        float negAng = transform.eulerAngles.z * Mathf.Deg2Rad;
+        float startAng = transform.eulerAngles.z;
+        float ang = startAng * Mathf.Deg2Rad;
+        float negAng = startAng * Mathf.Deg2Rad;
         RaycastHit2D hit2D = Physics2D.Raycast(transform.position, new Vector2(Mathf.Cos(ang), Mathf.Sin(ang)),
             lookDistance, detect);
         if (hit2D)
@@ -50,14 +59,14 @@ public class Boid : MonoBehaviour
                  if (!Physics2D.Raycast(transform.position, new Vector2(Mathf.Cos(ang), Mathf.Sin(ang)), lookDistance,
                      detect))
                  {
-                     transform.rotation = Quaternion.Euler(0,0,ang * Mathf.Rad2Deg);
+                     transform.rotation = Quaternion.Euler(0,0,Mathf.LerpAngle(startAng, ang * Mathf.Rad2Deg, 0.1f));
                      HasBroken = true;
                      break;
                  }
                  if (!Physics2D.Raycast(transform.position, new Vector2(Mathf.Cos(negAng), Mathf.Sin(negAng)), lookDistance,
                                       detect))
                  {
-                     transform.rotation = Quaternion.Euler(0,0,negAng * Mathf.Rad2Deg);
+                     transform.rotation = Quaternion.Euler(0,0,Mathf.LerpAngle(startAng, negAng * Mathf.Rad2Deg, 0.1f));
                      HasBroken = true;
                      break;
                  }
@@ -65,7 +74,7 @@ public class Boid : MonoBehaviour
 
             if (!HasBroken)
             {
-                transform.rotation = Quaternion.Euler(0,0,negAng * Mathf.Rad2Deg);
+                transform.rotation = Quaternion.Euler(0,0,Mathf.LerpAngle(startAng, startAng + 180f, 1f));
             }
         }
         
