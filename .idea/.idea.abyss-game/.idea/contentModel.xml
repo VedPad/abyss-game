@@ -59,6 +59,7 @@
             <e p="InverseKinematics.cs" t="Include" />
           </e>
         </e>
+        <e p="legStepper.cs" t="Include" />
         <e p="LightRays2D" t="Include">
           <e p="Editor" t="Include">
             <e p="LightRays2DEditor.cs" t="Include" />
