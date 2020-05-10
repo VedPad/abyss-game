@@ -74,7 +74,7 @@ public class Boid : MonoBehaviour
 
             if (!HasBroken)
             {
-                transform.rotation = Quaternion.Euler(0,0,Mathf.LerpAngle(startAng, startAng + 180f, 1f));
+                transform.rotation = Quaternion.Euler(0,0,Mathf.LerpAngle(startAng, startAng + 180f, 0.1f));
             }
         }
         

@@ -4,8 +4,8 @@
     float dirDegrees;
     int id;
     float lookDistance;
-    float debug1;
-    float debug2;
+    float waterCreatureX;
+    float waterCreatureY;
     float realAngle;
     int totalDirectionX;
     int totalDirectionY;
@@ -17,10 +17,23 @@
     int boidCount;
 };
 
+struct waterCreature{
+    float x;
+    float y;
+    int dummy1;
+    int dummy2;
+    int dummy3;
+    int dummy4;
+    int dummy5;
+    int dummy6;
+};
+
 
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
 RWStructuredBuffer<boid> boidBuffer;
+RWStructuredBuffer<waterCreature> creatureBuffer;
+int nCreatures;
 int nBoids;
 int F_TO_I;					// float to int
 float I_TO_F;	
@@ -101,6 +114,29 @@ void MainSimulation (uint3 id : SV_DispatchThreadID)
     
 }
 
+#pragma kernel DoWaterCreatureAvoidance
+
+
+
+[numthreads(32,1,1)]
+void DoWaterCreatureAvoidance (uint3 id : SV_DispatchThreadID){
+    boid boidNode = boidBuffer[id.x];
+    int nodeIndex = id.x;
+    int i = 0;
+    while(i < nCreatures){
+        waterCreature creature = creatureBuffer[i];
+        float2 otherPos = float2(creature.x, creature.y);
+        float2 direction = otherPos - float2(boidNode.x, boidNode.y);
+        float mag = distance(float2(0,0), direction);
+        if(mag <= boidNode.lookDistance){
+            float2 temp = direction/mag;
+            boidBuffer[nodeIndex].waterCreatureX += temp.x;
+            boidBuffer[nodeIndex].waterCreatureY += temp.y;
+        }
+        i++;
+    }
+}
+
 #pragma kernel DoBoidChanges
 
 [numthreads(32,1,1)]
@@ -120,7 +156,9 @@ void DoBoidChanges (uint3 id : SV_DispatchThreadID)
         totalDirection = -totalDirection/boid.boidCount;
         totalDirection += averageBoidDir;
         totalDirection += averageBoidPos;
-        totalDirection = totalDirection/3;
+        float2 waterCreatureVector = float2(boid.waterCreatureX, boid.waterCreatureY);
+        totalDirection += -waterCreatureVector/nCreatures * 5;
+        totalDirection = totalDirection/4;
          float angle = atan2(totalDirection.y, totalDirection.x);
        
         boidBuffer[nodeIndex].dirDegrees = angle;

@@ -19,6 +19,8 @@ public class grassMaterialBlock : MonoBehaviour
         _renderer.GetPropertyBlock(_propBlock);
         _propBlock.SetFloat("_WindDensity", 0.06f);
         _renderer.SetPropertyBlock(_propBlock);
+        Vector2 temp = Vector2.zero;
+        temp.x = 5;
     }
 
     // Update is called once per frame
